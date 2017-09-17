@@ -1,20 +1,10 @@
 // app.js
 
 let app = require('./reversi.js');
+board = app.generateBoard(4, 4, " ");
 
-
-console.log(app.algebraicToRowCol('C5'));
-console.log(app.algebraicToRowCol('D4'));
-console.log(app.algebraicToRowCol("A")); // undefined
-console.log(app.algebraicToRowCol("2")); // undefined
-console.log(app.algebraicToRowCol("2A")); // undefined
-console.log(app.algebraicToRowCol(" ")); // undefined
-console.log(app.algebraicToRowCol("A 2")); // undefined
-console.log(app.algebraicToRowCol("A:2")); // undefined
-console.log(app.algebraicToRowCol("**")); // undefined
-
-
-let board = app.generateBoard(4, 4, " ");
-board = app.placeLetters(board, 'X', "B3", "D4");
-
-console.log(board);
+/*
+let str = "     A   B   C  \n   +---+---+---+\n 1 |   |   | O |\n   +---+---+---+\n 2 |   | X |   |\n   +---+---+---+\n 3 |   |   |   |\n   +---+---+---+\n";
+console.log(str);
+*/
+app.flipCells(board, [[[0,0],[0,1]],[[1,1]]]);
