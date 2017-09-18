@@ -157,7 +157,7 @@ function getLeftIndices(board, lastRow, lastCol, boardWidth) {
 	for(let i = lastMoveIndex-1; i >= lastRow*boardWidth; i = lastMoveIndex-1) {// populate for left direction
 			leftIndices.push(i);
 			lastMoveIndex = i;
-		}
+	}
 	return leftIndices;
 }
 
@@ -253,20 +253,155 @@ function getLowerLeftIndices(board, lastRow, lastCol, boardWidth) {
 	return lowerLeftIndices;
 }
 
+function hasLetter(board, index) {
+	return board[index] != " ";
+}
+
+function potentialCells(board, indicesList, lastMoveLetter, functionName) {
+	let potentialCells = [];
+	boardWidth = Math.sqrt(board.length);
+	for(let index of indicesList) {
+		if(!hasLetter(board, index)) {
+			potentialCells = [];
+			break;
+		} else if(hasLetter(board, index) && lastMoveLetter != board[index]) {
+			if(functionName === "left" && isIndexOnLeftEdge(index, boardWidth))
+				break;
+			else if (functionName === "right" && isIndexOnRightEdge(index, boardWidth))
+				break;
+			else if(functionName === "up" && isIndexOnTopEdge(index, boardWidth))
+				break;
+			else if(functionName === "down" && isIndexOnBottomEdge(index, boardWidth))
+				break;
+			else if(functionName === "upRight" && (isIndexOnTopEdge(index, boardWidth) || isIndexOnRightEdge(index, boardWidth)))
+				break;
+			else if(functionName === "upleft" && (isIndexOnTopEdge(index, boardWidth) || isIndexOnLeftEdge(index, boardWidth)))
+				break;
+			else if(functionName === "lowRight" && (isIndexOnBottomEdge(index, boardWidth) || isIndexOnRightEdge(index, boardWidth)))
+				break;
+			else if(functionName === "lowLeft" && (isIndexOnBottomEdge(index, boardWidth) || isIndexOnLeftEdge(index, boardWidth)))
+				break;
+			else
+				potentialCells.push(index);
+		}
+		else if (hasLetter(board, index) && lastMoveLetter === board[index])
+			break;
+	}
+	return potentialCells;
+}
+
+function indexToRowColPair(board ,indexArray) {
+	let groups = [];
+	if (indexArray.length === 0)
+		return undefined;
+	for(let index of indexArray) {
+		let group = [];
+		let obj = indexToRowCol(board, index);
+		group.push(obj.row);
+		group.push(obj.col);
+		groups.push(group);
+	}
+	return groups;
+}
+
 function getCellsToFlip(board, lastRow, lastCol) {
-	const leftIndeices = getLeftIndices(board, lastRow, lastCol, boardWidth);
+	const lastMoveIndex = rowColToIndex(board, lastRow, lastCol);
+	const lastMoveLetter = board[lastMoveIndex];
+	const boardWidth = Math.sqrt(board.length);
+	let flipCells = [];
+	let leftFlip = [], rightFlip = [], upFlip = [], downFlip = [], upRightFlip = [], upLeftFlip = [], lowRightFlip = [], lowLeftFlip =[];
+
+	const leftIndices = getLeftIndices(board, lastRow, lastCol, boardWidth);
 	const rightIndices  = getRightIndices(board, lastRow, lastCol, boardWidth);
 	const upIndices = getUpIndices(board, lastRow, lastCol, boardWidth);
 	const downIndices = getDownIndices(board, lastRow, lastCol, boardWidth);;
 	const upperRightIndices = getUpperRightIndices(board, lastRow, lastCol, boardWidth);
 	const upperLeftIndices = getUpperLeftIndices(board, lastRow, lastCol, boardWidth);
+	console.log(upperLeftIndices);
 	const lowerRightIndices = getLowerRightIndices(board, lastRow, lastCol, boardWidth);
 	const lowerLeftIndices = getLowerLeftIndices(board, lastRow, lastCol, boardWidth);
+
+	leftFlip = potentialCells(board, leftIndices, lastMoveLetter, "left");
+	rightFlip = potentialCells(board, rightIndices, lastMoveLetter, "right");
+	upFlip = potentialCells(board, upIndices, lastMoveLetter, "up");
+	downFlip = potentialCells(board, downIndices, lastMoveLetter, "down");
+	upRightFlip = potentialCells(board, upperRightIndices, lastMoveLetter, "upRight");
+	upLeftFlip = potentialCells(board, upperLeftIndices, lastMoveLetter, "upLeft");
+	lowRightFlip = potentialCells(board, lowerRightIndices, lastMoveLetter, "lowRight");
+	lowLeftFlip = potentialCells(board, lowerLeftIndices, lastMoveLetter, "lowLeft");
+
+	leftFlip = indexToRowColPair(board, leftFlip);
+	rightFlip = indexToRowColPair(board, rightFlip);
+	upFlip = indexToRowColPair(board, upFlip);
+	downFlip = indexToRowColPair(board, downFlip);
+	upRightFlip = indexToRowColPair(board, upRightFlip);
+	upLeftFlip = indexToRowColPair(board, upLeftFlip);
+	lowRightFlip = indexToRowColPair(board, lowRightFlip);
+	lowLeftFlip = indexToRowColPair(board, lowLeftFlip);
+
+	let finalArray = [leftFlip, rightFlip, upFlip, downFlip, upRightFlip, upLeftFlip, lowRightFlip, lowLeftFlip];
+	for(let value of finalArray) {
+		if(value === undefined) {
+			continue;
+		}
+		else
+			flipCells.push(value);
+	}
+	return flipCells;
 }
 
 
-function isValidMove() {
+function isValidMove(board, letter, row, col) {
+	const moveIndex = rowColToIndex(board, row, col);
+	if(moveIndex < 0 && moveIndex >= board.length)
+		return false;
+	else if(hasLetter(board, moveIndex))
+		return false;
+	else {
+		board[moveIndex] = letter;
+		const flipCells = getCellsToFlip(board, row, col);
+		if(flipCells.length === 0) {
+			board[moveIndex] = " ";
+			return false;
+		} else {
+			board[moveIndex] = " ";
+			return true;
+		}
 
+	}
+}
+
+function isValidMoveAlgebraicNotation(board, letter, algebraicNotation) {
+	const obj = algebraicToRowCol(algebraicNotation);
+	return isValidMove(board, letter, obj.row, obj.col);
+}
+
+function getLetterCounts(board) {
+	let countX = 0, countO = 0;
+	let obj = {X:countX, O:countO};
+	for(let value of board) {
+		if(value === ' ')
+			continue
+		else if(value === 'X')
+			countX++;
+		else if(value === 'O')
+			countO++;
+	}
+	obj.X = countX;
+	obj.O = countO;
+	return obj;
+}
+
+function getValidMoves(board, letter) {
+	let validMoves = [];
+	for(let i = 0; i < board.length; i++) {
+		let obj = indexToRowCol(board, i);
+		if(isValidMove(board, letter, obj.row, obj.col)) {
+			let validPair = [obj.row, obj.col];
+			validMoves.push(validPair);
+		}
+	}
+	return validMoves;
 }
 
 
@@ -284,13 +419,7 @@ module.exports = {
     flipCells: flipCells,
     getCellsToFlip: getCellsToFlip,
     isValidMove: isValidMove,
-    getCellsToFlip: getCellsToFlip,
-    getLeftIndices: getLeftIndices,
-    getRightIndices: getRightIndices,
-    getUpIndices: getUpIndices,
-    getDownIndices: getDownIndices,
-    getUpperRightIndices: getUpperRightIndices,
-    getUpperLeftIndices: getUpperLeftIndices,
-    getLowerRightIndices: getLowerRightIndices,
-    getLowerLeftIndices: getLowerLeftIndices, 
+    isValidMoveAlgebraicNotation: isValidMoveAlgebraicNotation,
+    getLetterCounts: getLetterCounts,
+    getValidMoves: getValidMoves,
 }
