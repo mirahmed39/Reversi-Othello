@@ -190,7 +190,7 @@ describe('reversi', function() {
         });
     });
 
-
+    
     describe('isValidMove', function() {
         // TODO: check that move will flip other tiles
         it('returns true if move is played into empty cell that is within the board\'s dimensions and would flip at least one of the other player\'s pieces', function() {
@@ -299,7 +299,7 @@ describe('reversi', function() {
             expect(res).to.deep.include.members([[3, 3], [1, 2]]);
         });
     });
- 
+
     describe('getCellsToFlip', function() {
         // TODO: test diagonals, horizontal, vertical, more than one cell, etc.
         // TODO: the test for this should be flexible enough to handle different orderings
