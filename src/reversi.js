@@ -259,30 +259,72 @@ function hasLetter(board, index) {
 
 function potentialCells(board, indicesList, lastMoveLetter, functionName) {
 	let potentialCells = [];
-	boardWidth = Math.sqrt(board.length);
+	boardLength = board.length;
+	boardWidth = Math.sqrt(boardLength);
 	for(let index of indicesList) {
 		if(!hasLetter(board, index)) {
 			potentialCells = [];
 			break;
-		} else if(hasLetter(board, index) && lastMoveLetter != board[index]) {
-			if(functionName === "left" && isIndexOnLeftEdge(index, boardWidth))
-				break;
-			else if (functionName === "right" && isIndexOnRightEdge(index, boardWidth))
-				break;
-			else if(functionName === "up" && isIndexOnTopEdge(index, boardWidth))
-				break;
-			else if(functionName === "down" && isIndexOnBottomEdge(index, boardWidth))
-				break;
-			else if(functionName === "upRight" && (isIndexOnTopEdge(index, boardWidth) || isIndexOnRightEdge(index, boardWidth)))
-				break;
-			else if(functionName === "upleft" && (isIndexOnTopEdge(index, boardWidth) || isIndexOnLeftEdge(index, boardWidth)))
-				break;
-			else if(functionName === "lowRight" && (isIndexOnBottomEdge(index, boardWidth) || isIndexOnRightEdge(index, boardWidth)))
-				break;
-			else if(functionName === "lowLeft" && (isIndexOnBottomEdge(index, boardWidth) || isIndexOnLeftEdge(index, boardWidth)))
-				break;
-			else
-				potentialCells.push(index);
+		} 
+		else if(hasLetter(board, index) && lastMoveLetter != board[index]) {
+				if(functionName === "left") {
+					if(isIndexOnLeftEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				} 
+				else if (functionName === "right" && isIndexOnRightEdge(index, boardWidth)){
+					if(isIndexOnRightEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				}
+				else if(functionName === "up") {
+					if(isIndexOnTopEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				}
+				else if(functionName === "down" && isIndexOnBottomEdge(index, boardLength,boardWidth)){
+					if (isIndexOnBottomEdge(index, boardLength,boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				}
+				else if(functionName === "upRight") {
+					if(isIndexOnTopEdge(index, boardWidth) || isIndexOnRightEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				}
+				else if(functionName === "upLeft") {
+					if (isIndexOnTopEdge(index, boardWidth) || isIndexOnLeftEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else 
+						potentialCells.push(index);
+				}
+				else if(functionName === "lowRight") {
+					if(isIndexOnBottomEdge(index, boardLength, boardWidth) || isIndexOnRightEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				}
+				else if(functionName === "lowLeft") {
+					if (isIndexOnBottomEdge(index, boardLength, boardWidth) || isIndexOnLeftEdge(index, boardWidth)) {
+						potentialCells = [];
+						break;
+					} else
+						potentialCells.push(index);
+				}
+				else
+					potentialCells.push(index);
 		}
 		else if (hasLetter(board, index) && lastMoveLetter === board[index])
 			break;
@@ -314,10 +356,9 @@ function getCellsToFlip(board, lastRow, lastCol) {
 	const leftIndices = getLeftIndices(board, lastRow, lastCol, boardWidth);
 	const rightIndices  = getRightIndices(board, lastRow, lastCol, boardWidth);
 	const upIndices = getUpIndices(board, lastRow, lastCol, boardWidth);
-	const downIndices = getDownIndices(board, lastRow, lastCol, boardWidth);;
+	const downIndices = getDownIndices(board, lastRow, lastCol, boardWidth);
 	const upperRightIndices = getUpperRightIndices(board, lastRow, lastCol, boardWidth);
 	const upperLeftIndices = getUpperLeftIndices(board, lastRow, lastCol, boardWidth);
-	console.log(upperLeftIndices);
 	const lowerRightIndices = getLowerRightIndices(board, lastRow, lastCol, boardWidth);
 	const lowerLeftIndices = getLowerLeftIndices(board, lastRow, lastCol, boardWidth);
 
@@ -422,4 +463,12 @@ module.exports = {
     isValidMoveAlgebraicNotation: isValidMoveAlgebraicNotation,
     getLetterCounts: getLetterCounts,
     getValidMoves: getValidMoves,
+    getLeftIndices: getLeftIndices,
+    getRightIndices: getRightIndices,
+    getUpIndices:getUpIndices,
+    getDownIndices: getDownIndices,
+    getUpperRightIndices: getUpperRightIndices,
+    getUpperLeftIndices: getUpperLeftIndices,
+    getLowerRightIndices: getLowerRightIndices,
+    getLowerLeftIndices: getLowerLeftIndices,
 }
