@@ -74,36 +74,74 @@ function placeLetters(board, letter, ...algebraicNotation) {
 	}
 	return newBoard;
 }
-
-
+ 
 function boardToString(board) {
-	line = '-----'
-	verticalFormat = "|    ";
+	let line = '-----';
+	let verticalFormat = '|    ';
 	let boardString = "    ";
 	const columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 
 					'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-	let startRow = 1;
 	const boardWidth = Math.sqrt(board.length);
-	console.log(boardWidth);
 	for(let i = 0; i < boardWidth; i++) {
 		boardString += "  " +columns[i] + "  ";
 	}
 	boardString += "\n    ";
 	boardString += line.repeat(boardWidth) + '\n';
-	for(let i = 1; i <= boardWidth; i++) {
-		/* when the number becomes 2 digit it pushed the vertical bar one unit right
-			therefore to keep the vertical bars from row 10 and on aligned with row 1 to 9,
-			a space is deleted from the else clause.
-		*/
-		if(i < 10) {
-			boardString += i + "   " + verticalFormat.repeat(boardWidth) + '|' +'\n    ' + line.repeat(boardWidth) + '\n';
+	for(let startRow = 1, i = 0; i < board.length; i++) {
+		if(hasLetter(board, i)) {
+			curLetter = board[i];
+			let verticalFormatWithLetter = '| ' + curLetter + '  ';
+			if (startRow < 10) {
+					if(isIndexOnLeftEdge(i, boardWidth)) { // new row
+						boardString += startRow + "   " + verticalFormatWithLetter;
+					} 
+					else if(isIndexOnRightEdge(i, boardWidth)) { // end row
+						boardString += verticalFormatWithLetter + '|\n    ';
+						boardString += line.repeat(boardWidth) + '\n';
+						startRow++;
+					}
+					else
+						boardString += verticalFormatWithLetter;
+				} else {
+					if(isIndexOnLeftEdge(i, boardWidth)) { // new row
+						boardString += startRow + "  " + verticalFormatWithLetter;
+					} 
+					else if(isIndexOnRightEdge(i, boardWidth)) { // end row
+						boardString += verticalFormatWithLetter + '|\n    ';
+						boardString += line.repeat(boardWidth) + '\n';
+						startRow++;
+					}
+					else
+						boardString += verticalFormatWithLetter;
+				}
 		} else {
-			boardString += i + "  " + verticalFormat.repeat(boardWidth) + '|' +'\n    ' + line.repeat(boardWidth) + '\n';
+			if (startRow < 10) {
+					if(isIndexOnLeftEdge(i, boardWidth)) { // new row
+						boardString += startRow + "   " + verticalFormat;
+					} 
+					else if(isIndexOnRightEdge(i, boardWidth)) { // end row
+						boardString += verticalFormat + '|\n    ';
+						boardString += line.repeat(boardWidth) + '\n';
+						startRow++;
+					}
+					else
+						boardString += verticalFormat;
+			} else {
+				if(isIndexOnLeftEdge(i, boardWidth)) { // new row
+					boardString += startRow + "  " + verticalFormat;
+				} 
+				else if(isIndexOnRightEdge(i, boardWidth)) { // end row
+					boardString += verticalFormat + '|\n    ';
+					boardString += line.repeat(boardWidth) + '\n';
+					startRow++;
+				}
+				else
+					boardString += verticalFormat;
+			}
+
 		}
-
-	}	
-	console.log(boardString);
-
+	}
+	return boardString;
 }
 
 function isBoardFull(board) {
@@ -445,6 +483,12 @@ function getValidMoves(board, letter) {
 	return validMoves;
 }
 
+function getCenterIndices(boardWidth) {
+	const firstRowIndex = (boardWidth/2) - 1;
+	const secondRowIndex = firstRowIndex + 1;
+
+	return [[firstRowIndex, firstRowIndex], [firstRowIndex, firstRowIndex+1], [secondRowIndex, secondRowIndex-1], [secondRowIndex, secondRowIndex]];
+}
 
 module.exports = {
     repeat: repeat,
@@ -454,7 +498,7 @@ module.exports = {
     setBoardCell: setBoardCell,
     algebraicToRowCol: algebraicToRowCol,
     placeLetters: placeLetters,
-    //boardToString: boardToString, // NOT COMPLETED.
+   	boardToString: boardToString, // NOT COMPLETED.
     isBoardFull: isBoardFull,
     flip: flip,
     flipCells: flipCells,
@@ -471,4 +515,5 @@ module.exports = {
     getUpperLeftIndices: getUpperLeftIndices,
     getLowerRightIndices: getLowerRightIndices,
     getLowerLeftIndices: getLowerLeftIndices,
+    getCenterIndices: getCenterIndices,
 }
