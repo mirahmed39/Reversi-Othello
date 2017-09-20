@@ -164,11 +164,12 @@ function flip(board, row, col) {
 } 
 
 function flipCells(board, cellsToFlip) {
-	for(group of cellsToFlip){
-		for(cell of group)
-			flip(board, cell[0], cell[1]);
+	let flippedBoard;
+	for(let group of cellsToFlip){
+		for(let cell of group)
+			flippedBoard = flip(board, cell[0], cell[1]);
 	}
-	return board;
+	return flippedBoard;
 }
 
 function isIndexOnLeftEdge(index, boardWidth) {
@@ -458,12 +459,12 @@ function isValidMoveAlgebraicNotation(board, letter, algebraicNotation) {
 function getLetterCounts(board) {
 	let countX = 0, countO = 0;
 	let obj = {X:countX, O:countO};
-	for(let value of board) {
-		if(value === ' ')
+	for(let i = 0; i < board.length; i++) {
+		if(board[i] === ' ')
 			continue
-		else if(value === 'X')
+		else if(board[i] === 'X')
 			countX++;
-		else if(value === 'O')
+		else if(board[i] === 'O')
 			countO++;
 	}
 	obj.X = countX;
@@ -486,8 +487,18 @@ function getValidMoves(board, letter) {
 function getCenterIndices(boardWidth) {
 	const firstRowIndex = (boardWidth/2) - 1;
 	const secondRowIndex = firstRowIndex + 1;
+	return {
+		player1: [[firstRowIndex, firstRowIndex],[secondRowIndex, secondRowIndex]],
+		player2: [[firstRowIndex, firstRowIndex+1],[secondRowIndex, secondRowIndex-1]]
+	}
+}
 
-	return [[firstRowIndex, firstRowIndex], [firstRowIndex, firstRowIndex+1], [secondRowIndex, secondRowIndex-1], [secondRowIndex, secondRowIndex]];
+function userRun(bard) {
+
+}
+
+function computerRun(board) {
+
 }
 
 module.exports = {
@@ -498,7 +509,7 @@ module.exports = {
     setBoardCell: setBoardCell,
     algebraicToRowCol: algebraicToRowCol,
     placeLetters: placeLetters,
-   	boardToString: boardToString, // NOT COMPLETED.
+   	boardToString: boardToString,
     isBoardFull: isBoardFull,
     flip: flip,
     flipCells: flipCells,
@@ -507,13 +518,5 @@ module.exports = {
     isValidMoveAlgebraicNotation: isValidMoveAlgebraicNotation,
     getLetterCounts: getLetterCounts,
     getValidMoves: getValidMoves,
-    getLeftIndices: getLeftIndices,
-    getRightIndices: getRightIndices,
-    getUpIndices:getUpIndices,
-    getDownIndices: getDownIndices,
-    getUpperRightIndices: getUpperRightIndices,
-    getUpperLeftIndices: getUpperLeftIndices,
-    getLowerRightIndices: getLowerRightIndices,
-    getLowerLeftIndices: getLowerLeftIndices,
     getCenterIndices: getCenterIndices,
 }

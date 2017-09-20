@@ -4,13 +4,6 @@ const app = require('./reversi.js');
 const readlineSync = require('readline-sync');
 const fs = require('fs');
 
-
-let board = app.generateBoard(4,4);
-board = app.placeLetters(board, 'X', 'A1', 'C3');
-board = app.placeLetters(board, 'O', 'A4', 'C4', 'D4', 'B2', 'A2');
-console.log(app.boardToString(board));
-
-/*
 //varible declarations
 let boardWidth, userLetter, botLetter;
 // interactive game begins.
@@ -40,12 +33,50 @@ while(true) {
 //construct board and place initial cells.
 let board = app.generateBoard(boardWidth, boardWidth);
 const initialCellIndices = app.getCenterIndices(boardWidth);
-board = app.setBoardCell(board, userLetter, initialCellIndices[0][0], initialCellIndices[0][1]);
-board = app.setBoardCell(board, userLetter, initialCellIndices[2][0], initialCellIndices[2][1]);
-board = app.setBoardCell(board, botLetter, initialCellIndices[1][0], initialCellIndices[1][1]);
-board = app.setBoardCell(board, botLetter, initialCellIndices[3][0], initialCellIndices[3][1]);
-console.log(board);
-console.log("What is your move? "); */
+
+board = app.setBoardCell(board, userLetter, initialCellIndices.player1[0][0], initialCellIndices.player1[0][1]);
+board = app.setBoardCell(board, userLetter, initialCellIndices.player1[1][0], initialCellIndices.player1[1][1]);
+board = app.setBoardCell(board, botLetter, initialCellIndices.player2[0][0], initialCellIndices.player2[0][1]);
+board = app.setBoardCell(board, botLetter, initialCellIndices.player2[1][0], initialCellIndices.player2[1][1]);
+
+//display the board
+console.log(app.boardToString(board));
+
+//simulation prep
+let player = false, computer = false, userPass = 0, computerPass = 0;
+let score = app.getLetterCounts(board);
+if(userLetter === "X") {
+	player = true;
+} else {
+	computer = true;
+}
+
+while((player || computer)) {
+	if(player === true) {
+		let userMove = readlineSync.question("What is your move? ");
+		while(true) {
+			if(!app.isValidMoveAlgebraicNotation(board, userLetter, userMove)) {
+				console.log("INVALID MOVE. Your move should:\n" +
+					"* be in a format \n* specify an existing empty cell" +
+					"\n*flip at least one of your opponent's pieces.");
+				userMove = readlineSync.question("What is your move? ");
+			} else {
+				userMoveRowCol = app.algebraicToRowCol(userMove);
+				let cellsToFlip = app.getCellsToFlip(board, userMoveRowCol.row, userMoveRowCol.col); // returns arrays of row col pair grouped together.
+				board = app.flipCells(board, cellsToFlip);
+				score = app.getLetterCounts(board);
+				console.log(app.boardToString(board));
+				console.log("Score\n====");
+				console.log("X :" + score.X);
+				console.log("O :"+ score.O);
+				player = false;
+				computer = true;
+				break;
+			}
+		}
+	}
+	break;
+}
 
 
 
