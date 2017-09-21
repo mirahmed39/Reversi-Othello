@@ -46,16 +46,18 @@ console.log(app.boardToString(board));
 //simulation prep
 let player = false, computer = false, userPass = 0, computerPass = 0;
 let score = app.getLetterCounts(board);
+let userMove;
 if(userLetter === "X") {
 	player = true;
 } else {
 	computer = true;
 }
 
+
 while((player || computer) && !app.isBoardFull(board)) {
 	if(player === true && userPass < 3) {
 		let userMove = readlineSync.question("What is your move? ");
-		while(true) {
+		while(true && !app.isBoardFull(board)) {
 			const hasValidMoves = app.getValidMoves(board, userLetter).length > 0 ? true : false;
 			const isValidMove = app.isValidMoveAlgebraicNotation(board, userLetter, userMove);
 			if(!isValidMove && !hasValidMoves) {
@@ -80,17 +82,18 @@ while((player || computer) && !app.isBoardFull(board)) {
 				console.log("Score\n====");
 				console.log("X :" + score.X);
 				console.log("O :"+ score.O);
-				readlineSync.question('Press <Enter> to show computer\'s move');
+				if (!app.isBoardFull(board))
+					readlineSync.question('Press <Enter> to show computer\'s move');
 				player = false;
 				computer = true;
 				break;
 			}
 		}
 	} 
-	else if (computer === true && computerPass < 3) {
+	else if (computer === true && computerPass < 3 && !app.isBoardFull(board)) {
 		const validMoves = app.getValidMoves(board, botLetter);
 		const hasValidMoves = app.getValidMoves(board, botLetter).length > 0 ? true : false;
-		const isBoardFull = app.isBoardFull(board);
+		//const isBoardFull = app.isBoardFull(board);
 		if (!hasValidMoves) {
 			console.log("Computer does not have any valid moves.");
 			console.log("Control passed to the player");
@@ -114,6 +117,11 @@ while((player || computer) && !app.isBoardFull(board)) {
 			player = true;
 		}
 	}
+	else {
+		player = false;
+		computer = false;
+		break;
+	}
 }
 
 let finalScore = app.getLetterCounts(board);
@@ -123,7 +131,7 @@ console.log("O :"+ finalScore.O);
 
 // announce the winner
 console.log("Game is over");
-if(app.isBoardFull)
+if(app.isBoardFull(board))
 	console.log("Board is full!!");
 else if(userPass > 2)
 	console.log("You have exceeded the pass limit");
@@ -131,9 +139,9 @@ else
 	console.log("Computer has exceeded the pass limit");
 
 if((userLetter === "X" && finalScore.X > finalScore.O) || (userLetter === "O" && finalScore.X < finalScore.O))
-	console.log("You won. CHEERS!!!");
+	console.log("You Won. CHEERS!!!");
 else if(finalScore.X === finalScore.O)
-	console.log("Game Tied, You are as smart as the computer");
+	console.log("Game Tied, Computer is as smart as you are");
 else
 	console.log("Computer Won :( Better luck next time.")
 

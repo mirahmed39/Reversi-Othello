@@ -1,4 +1,4 @@
-// reversi.js
+E// reversi.js
 
 
 /*
