@@ -51,17 +51,27 @@ if(userLetter === "X") {
 	computer = true;
 }
 
-while((player || computer)) {
-	if(player === true) {
+while((player || computer) && !app.isBoardFull(board)) {
+	if(player === true && userPass < 3) {
 		let userMove = readlineSync.question("What is your move? ");
 		while(true) {
-			if(!app.isValidMoveAlgebraicNotation(board, userLetter, userMove)) {
+			const hasValidMoves = app.getValidMoves(board, userLetter).length > 0 ? true : false;
+			const isValidMove = app.isValidMoveAlgebraicNotation(board, userLetter, userMove);
+			if(!isValidMove && !hasValidMoves) {
+				console.log("No valid moves available for you.");
+				readlineSync.question("Press <Enter> to pass your turn to computer");
+				userPass++;
+				player = false;
+				computer = true;
+				break;
+			} else if(!isValidMove) {
 				console.log("INVALID MOVE. Your move should:\n" +
-					"* be in a format \n* specify an existing empty cell" +
-					"\n*flip at least one of your opponent's pieces.");
+				"* be in a format \n* specify an existing empty cell" +
+				"\n*flip at least one of your opponent's pieces.");
 				userMove = readlineSync.question("What is your move? ");
 			} else {
 				userMoveRowCol = app.algebraicToRowCol(userMove);
+				board = app.setBoardCell(board, userLetter, userMoveRowCol.row, userMoveRowCol.col);
 				let cellsToFlip = app.getCellsToFlip(board, userMoveRowCol.row, userMoveRowCol.col); // returns arrays of row col pair grouped together.
 				board = app.flipCells(board, cellsToFlip);
 				score = app.getLetterCounts(board);
@@ -69,13 +79,57 @@ while((player || computer)) {
 				console.log("Score\n====");
 				console.log("X :" + score.X);
 				console.log("O :"+ score.O);
+				readlineSync.question('Press <Enter> to show computer\'s move');
 				player = false;
 				computer = true;
 				break;
 			}
 		}
+	} 
+	else if (computer === true && computerPass < 3) {
+		const validMoves = app.getValidMoves(board, botLetter);
+		const hasValidMoves = app.getValidMoves(board, botLetter).length > 0 ? true : false;
+		const isBoardFull = app.isBoardFull(board);
+		if (!hasValidMoves) {
+			console.log("Computer does not have any valid moves.");
+			console.log("Control passed to the player");
+			computerPass++;
+			computer = false;
+			player = true;
+		}
+		else if(hasValidMoves) {
+			let rowCol = validMoves[Math.floor(Math.random()* validMoves.length)];
+			let algebraicNotation = app.rowColToAlgebraic(rowCol[0], rowCol[1]);
+			board = app.setBoardCell(board, botLetter, rowCol[0], rowCol[1]);
+			console.log("Computer has made a move at cell: " + algebraicNotation);
+			let cellsToFlip = app.getCellsToFlip(board, rowCol[0], rowCol[1]); // returns arrays of row col pair grouped together.
+			board = app.flipCells(board, cellsToFlip);
+			console.log(app.boardToString(board));
+			score = app.getLetterCounts(board);
+			console.log("Score\n====");
+			console.log("X :" + score.X);
+			console.log("O :"+ score.O);
+			computer = false;
+			player = true;
+		}
+	} 
+	else {
+		// the game is over. show who has won and break out of the loop.
+		break;
 	}
-	break;
+	let finalScore = app.getLetterCounts(board);
+	console.log("Final Score\n====");
+	console.log("X :" + finalScore.X);
+	console.log("O :"+ score.O);
+
+	// announce the winner
+	if((userLetter === "X" && finalScore.X > finalScore.O) && (userLetter === "O" && finalScore.X < finalScore.O))
+		conosole.log("You won. CHEERS!!!");
+	else if(finalScore.X === finalScore.O)
+		console.log("Game Tied, You are as smart as the computer");
+	else
+		console.log("Computer Won :( Bettee luck next time.");
+
 }
 
 
