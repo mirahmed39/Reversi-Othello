@@ -40,6 +40,7 @@ board = app.setBoardCell(board, botLetter, initialCellIndices.player2[0][0], ini
 board = app.setBoardCell(board, botLetter, initialCellIndices.player2[1][0], initialCellIndices.player2[1][1]);
 
 //display the board
+console.log("Initial Board Setup");
 console.log(app.boardToString(board));
 
 //simulation prep
@@ -59,7 +60,7 @@ while((player || computer) && !app.isBoardFull(board)) {
 			const isValidMove = app.isValidMoveAlgebraicNotation(board, userLetter, userMove);
 			if(!isValidMove && !hasValidMoves) {
 				console.log("No valid moves available for you.");
-				readlineSync.question("Press <Enter> to pass your turn to computer");
+				readlineSync.question("Press <Enter> to pass your turn to computer (You are only allowed to pass twice)");
 				userPass++;
 				player = false;
 				computer = true;
@@ -101,7 +102,7 @@ while((player || computer) && !app.isBoardFull(board)) {
 			let rowCol = validMoves[Math.floor(Math.random()* validMoves.length)];
 			let algebraicNotation = app.rowColToAlgebraic(rowCol[0], rowCol[1]);
 			board = app.setBoardCell(board, botLetter, rowCol[0], rowCol[1]);
-			console.log("Computer has made a move at cell: " + algebraicNotation);
+			console.log("+----Computer has made a move at cell: " + algebraicNotation + "----+");
 			let cellsToFlip = app.getCellsToFlip(board, rowCol[0], rowCol[1]); // returns arrays of row col pair grouped together.
 			board = app.flipCells(board, cellsToFlip);
 			console.log(app.boardToString(board));
@@ -112,25 +113,29 @@ while((player || computer) && !app.isBoardFull(board)) {
 			computer = false;
 			player = true;
 		}
-	} 
-	else {
-		// the game is over. show who has won and break out of the loop.
-		break;
 	}
-	let finalScore = app.getLetterCounts(board);
-	console.log("Final Score\n====");
-	console.log("X :" + finalScore.X);
-	console.log("O :"+ score.O);
-
-	// announce the winner
-	if((userLetter === "X" && finalScore.X > finalScore.O) && (userLetter === "O" && finalScore.X < finalScore.O))
-		conosole.log("You won. CHEERS!!!");
-	else if(finalScore.X === finalScore.O)
-		console.log("Game Tied, You are as smart as the computer");
-	else
-		console.log("Computer Won :( Bettee luck next time.");
-
 }
+
+let finalScore = app.getLetterCounts(board);
+console.log("Final Score\n====");
+console.log("X :" + finalScore.X);
+console.log("O :"+ finalScore.O);
+
+// announce the winner
+console.log("Game is over");
+if(app.isBoardFull)
+	console.log("Board is full!!");
+else if(userPass > 2)
+	console.log("You have exceeded the pass limit");
+else
+	console.log("Computer has exceeded the pass limit");
+
+if((userLetter === "X" && finalScore.X > finalScore.O) || (userLetter === "O" && finalScore.X < finalScore.O))
+	console.log("You won. CHEERS!!!");
+else if(finalScore.X === finalScore.O)
+	console.log("Game Tied, You are as smart as the computer");
+else
+	console.log("Computer Won :( Better luck next time.")
 
 
 
