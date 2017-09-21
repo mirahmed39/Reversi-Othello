@@ -26,7 +26,8 @@ function generateBoard(rows, columns, initialCellValue = " ") {
 function rowColToIndex(board, rowNumber, columnNumber) {
 	const boardEntries = board.length;
 	const boardWidth = Math.sqrt(boardEntries);
-	return (boardWidth*rowNumber)+columnNumber;
+	let index = (boardWidth*rowNumber)+columnNumber;
+	return index;
 }
 
 
@@ -43,8 +44,8 @@ function indexToRowCol(board, i) {
 
 
 function setBoardCell(board, letter, row, col) {
-	const setBoard = board.slice();
-	const indexToSet = rowColToIndex(board, row, col);
+	let setBoard = board.slice();
+	let indexToSet = rowColToIndex(setBoard, row, col);
 	setBoard[indexToSet] = letter;
 	return setBoard;
 }
@@ -59,6 +60,14 @@ function algebraicToRowCol(algebraicNotation) {
 		};
 	}
 	return undefined;
+}
+
+function rowColToAlgebraic(row, col) {
+	let algebraicNotation = '';
+	const letterToCol = {0:"A", 1:"B", 2:"C",3:"D",4:"E",5:"F",6:"G",7:"H",8:"I",9:"J",10:"K",11:"L",12:"M",
+						13:"N",14:"O",15:"P",16:"Q",17:"R",18:"S",19:"T",20:"U",21:"V",22:"W",23:"X",24:"Y",25:"Z",};
+	algebraicNotation += letterToCol[col] + (row+1);
+	return algebraicNotation;
 }
 
 function placeLetters(board, letter, ...algebraicNotation) {
@@ -158,7 +167,7 @@ function flip(board, row, col) {
 	indexToFlip = rowColToIndex(board, row, col);
 	if(board[indexToFlip] === "X")
 		board[indexToFlip] = "O";
-	else if(board[indexToFlip] === "Y")
+	else if(board[indexToFlip] === "O")
 		board[indexToFlip] = "X";
 	return board;
 } 
@@ -519,4 +528,5 @@ module.exports = {
     getLetterCounts: getLetterCounts,
     getValidMoves: getValidMoves,
     getCenterIndices: getCenterIndices,
+    rowColToAlgebraic: rowColToAlgebraic,
 }
