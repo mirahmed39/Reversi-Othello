@@ -1,4 +1,4 @@
-E// reversi.js
+// reversi.js
 
 
 /*
@@ -24,9 +24,10 @@ function generateBoard(rows, columns, initialCellValue = " ") {
 }
 
 function rowColToIndex(board, rowNumber, columnNumber) {
+	let index;
 	const boardEntries = board.length;
 	const boardWidth = Math.sqrt(boardEntries);
-	let index = (boardWidth*rowNumber)+columnNumber;
+	index = (boardWidth*rowNumber)+columnNumber;
 	return index;
 }
 
@@ -74,9 +75,9 @@ function placeLetters(board, letter, ...algebraicNotation) {
 	let newBoard = board.slice();
 	const notations = algebraicNotation;
 	for( let i = 0; i < notations.length; i++) {
-		rowCol = algebraicToRowCol(notations[i]);
+		let rowCol = algebraicToRowCol(notations[i]);
 		if(rowCol === undefined) {
-			console.log("Invalid Notation " + notation);
+			console.log("Invalid Notation ");
 		} else {
 			newBoard = setBoardCell(newBoard, letter, rowCol.row, rowCol.col);
 		}
@@ -98,7 +99,7 @@ function boardToString(board) {
 	boardString += line.repeat(boardWidth) + '\n';
 	for(let startRow = 1, i = 0; i < board.length; i++) {
 		if(hasLetter(board, i)) {
-			curLetter = board[i];
+			let curLetter = board[i];
 			let verticalFormatWithLetter = '| ' + curLetter + '  ';
 			if (startRow < 10) {
 					if(isIndexOnLeftEdge(i, boardWidth)) { // new row
@@ -157,14 +158,12 @@ function isBoardFull(board) {
 	for(let value of board) {
 		if(value === ' ')
 			return false;
-		else 
-			continue;
 	}
 	return true;
 }
 
 function flip(board, row, col) {
-	indexToFlip = rowColToIndex(board, row, col);
+	let indexToFlip = rowColToIndex(board, row, col);
 	if(board[indexToFlip] === "X")
 		board[indexToFlip] = "O";
 	else if(board[indexToFlip] === "O")
@@ -237,7 +236,7 @@ function getDownIndices(board, lastRow, lastCol, boardWidth) {
 	let lastMoveIndex = rowColToIndex(board, lastRow, lastCol);
 	let downIndices = [];
 	if(isIndexOnBottomEdge(lastMoveIndex, boardWidth))
-		return downIndeces;
+		return downIndices;
 	for(let i = lastMoveIndex + boardWidth; i < board.length; i = lastMoveIndex + boardWidth) { //populate for downward direction 
 		downIndices.push(i);
 		lastMoveIndex = i;
@@ -302,7 +301,7 @@ function getLowerLeftIndices(board, lastRow, lastCol, boardWidth) {
 }
 
 function hasLetter(board, index) {
-	return board[index] != " ";
+	return board[index] !== " ";
 }
 
 function potentialCells(board, indicesList, lastMoveLetter, functionName) {
@@ -314,7 +313,7 @@ function potentialCells(board, indicesList, lastMoveLetter, functionName) {
 			potentialCells = [];
 			break;
 		} 
-		else if(hasLetter(board, index) && lastMoveLetter != board[index]) {
+		else if(hasLetter(board, index) && lastMoveLetter !== board[index]) {
 				if(functionName === "left") {
 					if(isIndexOnLeftEdge(index, boardWidth)) {
 						potentialCells = [];
@@ -502,14 +501,6 @@ function getCenterIndices(boardWidth) {
 	}
 }
 
-function userRun(bard) {
-
-}
-
-function computerRun(board) {
-
-}
-
 module.exports = {
     repeat: repeat,
     generateBoard: generateBoard,
@@ -529,4 +520,4 @@ module.exports = {
     getValidMoves: getValidMoves,
     getCenterIndices: getCenterIndices,
     rowColToAlgebraic: rowColToAlgebraic,
-}
+};

@@ -2,12 +2,11 @@
 // importing modules.
 const app = require('./reversi.js');
 const readlineSync = require('readline-sync');
-const fs = require('fs');
 
-//varible declarations
+//variable declarations
 let boardWidth, userLetter, botLetter;
 // interactive game begins.
-console.log("Hello!! Welcome to the world of REVERSI");
+console.log("Hello!! Welcome to the world of Reversi/Othello");
 
 boardWidth = readlineSync.question("How wide the board should be? (must be an even number between 4 and 26): ");
 while(true) {
@@ -21,7 +20,7 @@ userLetter = readlineSync.question("Which letter you want to choose? X for black
 while(true) {
 	if(userLetter === 'X' || userLetter === 'O') {
 		console.log("You picked " + userLetter);
-		if(userLetter != 'X')
+		if(userLetter !== 'X')
 			botLetter = "X";
 		else
 			botLetter = "O";
@@ -46,7 +45,6 @@ console.log(app.boardToString(board));
 //simulation prep
 let player = false, computer = false, userPass = 0, computerPass = 0;
 let score = app.getLetterCounts(board);
-let userMove;
 if(userLetter === "X") {
 	player = true;
 } else {
@@ -57,8 +55,8 @@ if(userLetter === "X") {
 while((player || computer) && !app.isBoardFull(board)) {
 	if(player === true && userPass < 3) {
 		let userMove = readlineSync.question("What is your move? ");
-		while(true && !app.isBoardFull(board)) {
-			const hasValidMoves = app.getValidMoves(board, userLetter).length > 0 ? true : false;
+		while(!app.isBoardFull(board)) {
+			const hasValidMoves = app.getValidMoves(board, userLetter).length > 0;
 			const isValidMove = app.isValidMoveAlgebraicNotation(board, userLetter, userMove);
 			if(!isValidMove && !hasValidMoves) {
 				console.log("No valid moves available for you.");
@@ -73,7 +71,7 @@ while((player || computer) && !app.isBoardFull(board)) {
 				"\n*flip at least one of your opponent's pieces.");
 				userMove = readlineSync.question("What is your move? ");
 			} else {
-				userMoveRowCol = app.algebraicToRowCol(userMove);
+				let userMoveRowCol = app.algebraicToRowCol(userMove);
 				board = app.setBoardCell(board, userLetter, userMoveRowCol.row, userMoveRowCol.col);
 				let cellsToFlip = app.getCellsToFlip(board, userMoveRowCol.row, userMoveRowCol.col); // returns arrays of row col pair grouped together.
 				board = app.flipCells(board, cellsToFlip);
@@ -92,7 +90,7 @@ while((player || computer) && !app.isBoardFull(board)) {
 	} 
 	else if (computer === true && computerPass < 3 && !app.isBoardFull(board)) {
 		const validMoves = app.getValidMoves(board, botLetter);
-		const hasValidMoves = app.getValidMoves(board, botLetter).length > 0 ? true : false;
+		const hasValidMoves = app.getValidMoves(board, botLetter).length > 0;
 		//const isBoardFull = app.isBoardFull(board);
 		if (!hasValidMoves) {
 			console.log("Computer does not have any valid moves.");
@@ -143,9 +141,4 @@ if((userLetter === "X" && finalScore.X > finalScore.O) || (userLetter === "O" &&
 else if(finalScore.X === finalScore.O)
 	console.log("Game Tied, Computer is as smart as you are");
 else
-	console.log("Computer Won :( Better luck next time.")
-
-
-
-
-
+	console.log("Computer Won :( Better luck next time.");
